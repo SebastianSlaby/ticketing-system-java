@@ -5,7 +5,7 @@
 * users (name, surname, email, hashed password, salt, user type)
 * ticket types ?
 * user types (ticket creator, ticket resolver)
-* notes (ticket, text)
+* notes (ticket,summary, description)
 * ticket status (in progress(INPROG), closed(CLOSED), waiting for customer response/action(SLAHOLD) )
 
 ## Stack
