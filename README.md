@@ -3,7 +3,7 @@
 ## Database design
 * tickets (summary, description, creator, resolver, status, type, date added, date closed)
 * users (name, surname, email, hashed password, salt, user type)
-* ticket types ?
+* ticket types (infrastructure, software, hardware)
 * user types (ticket creator, ticket resolver)
 * notes (ticket,summary, description)
 * ticket status (in progress(INPROG), closed(CLOSED), waiting for customer response/action(SLAHOLD) )
