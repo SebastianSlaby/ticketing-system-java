@@ -12,14 +12,19 @@ public class Ticket {
 	Date date_added;
 	Date date_closed;
 	
+	dbHandler handler;
 	
-	void Create(Ticket ticket) {
-		
-	}
 	
 	void Close(int ID) {
 		
 	}
-
+	
+	void Upload(Ticket ticket) {
+		
+	}
+	
+	void addNote(int id) {
+		
+	}
 	
 }
