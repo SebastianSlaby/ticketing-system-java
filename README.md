@@ -37,6 +37,7 @@ Done:
 * User registration
 * User login
 * Database handler 
+
 TODO:
 * GUI
 * Ticket creation, closure, adding notes
