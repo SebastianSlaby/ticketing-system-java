@@ -22,3 +22,11 @@
 * A resolver is able to assign the ticket to himself 
 * It's possible to add notes to a ticket to document the workflow
 * Each ticket must have a summary and description
+
+## Progress
+Done:
+*
+*
+TODO:
+*
+*
