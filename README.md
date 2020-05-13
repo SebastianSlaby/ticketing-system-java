@@ -23,6 +23,7 @@
 * It's possible to add notes to a ticket to document the workflow
 * Each ticket must have a summary and description
 * A user's permissions may only be changed by someone with Resolver privileges through the GUI
+* A user's password is stored in a the form of a secure hash. Each user is given a random salt which is combined with the password to create the hash. It's impossible to recover a user's password in case it's forgotten.
 
 ## Architecture
 * Ticket, Account and dbHandler classes are used to interface with the program
@@ -37,6 +38,8 @@ Done:
 * User registration
 * User login
 * Database handler 
+* Architectural design
+* Database design and implementation
 
 TODO:
 * GUI
