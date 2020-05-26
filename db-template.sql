@@ -21,7 +21,8 @@ SET time_zone = "+00:00";
 --
 -- Baza danych: `ticketing`
 --
-
+CREATE DATABASE IF NOT EXISTS ticketing;
+USE ticketing;
 -- --------------------------------------------------------
 
 --

@@ -11,6 +11,7 @@ public class Account {
 	String surname;
 	String email;
 	int user_type;
+	private boolean confirmDelete;
 	
 	Boolean loggedIn;
 
