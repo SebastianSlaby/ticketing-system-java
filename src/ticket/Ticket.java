@@ -2,44 +2,52 @@ package ticket;
 
 import java.time.LocalDate;
 
-public class Ticket extends Note{
+public class Ticket{
 
-	private int id;
-	private String note;
-	private String description;
-	private int resolver_id;
-	private int creator_id;
-	private LocalDate dateOfClosure;
+	private int ticketId;
+	private String ticketTitle;
+	private String ticketDetails;
+	private int resolverId;
+	private int creatorId;
+	private int statusId;
+	private LocalDate ticketDateOfCreation;
+	private LocalDate ticketDateOfClosure;
+	private Notes notes;
 
-	dbHandler handler;
 
-	public Ticket(String note, String description, int resolver_id, int creator_id, String dateOfClosure) {
-		super(note);
-		this.description = description;
-		this.resolver_id = resolver_id;
-		this.creator_id = creator_id;
-		this.dateOfClosure = LocalDate.parse(dateOfClosure);
+	public Ticket(int ticketId, String ticketTitle, String ticketDetails, int resolverId, int creatorId, int statusId, LocalDate ticketDateOfCreation, Notes notes) {
+		this.ticketId = ticketId;
+		this.ticketTitle = ticketTitle;
+		this.ticketDetails = ticketDetails;
+		this.resolverId = resolverId;
+		this.creatorId = creatorId;
+		this.statusId = statusId;
+		this.ticketDateOfCreation = ticketDateOfCreation;
+		this.notes = notes;
 	}
 
-	public String getDescription() {
-		return description;
+	public int getTicketId() {
+		return ticketId;
 	}
 
-
-	public LocalDate getDateOfClosure() {
-		return dateOfClosure;
+	public String getTicketTitle() {
+		return ticketTitle;
 	}
 
-	void Close(int ID) {
-		
+	public Notes getNotes() {
+		return notes;
 	}
-	
-	void Upload(Ticket ticket) {
-		
+
+	public String getTicketDetails() {
+		return ticketDetails;
 	}
-	
-	void addNote(int id) {
-		
+
+	public LocalDate getTicketDateOfCreation() {
+		return ticketDateOfCreation;
+	}
+
+	public LocalDate getTicketDateOfClosure() {
+		return ticketDateOfClosure;
 	}
 	
 }

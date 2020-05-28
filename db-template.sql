@@ -33,7 +33,8 @@ CREATE TABLE `notes` (
   `id` int(255) NOT NULL,
   `ticket_id` int(255) NOT NULL,
   `summary` varchar(255) NOT NULL,
-  `description` text NOT NULL
+  `description` text NOT NULL,
+  `date_added` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -50,7 +51,7 @@ CREATE TABLE `tickets` (
   `creator_id` int(255) NOT NULL,
   `status_id` int(255) NOT NULL,
   `date_added` date NOT NULL,
-  `date_closed` date NOT NULL
+  `date_closed` date
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -91,7 +92,8 @@ CREATE TABLE `users` (
   `name` varchar(1024) NOT NULL,
   `surname` varchar(1024) NOT NULL,
   `email` varchar(1024) NOT NULL,
-  `user_type` int(255) NOT NULL
+  `user_type` int(255) NOT NULL,
+  `confirm_delete` boolean NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

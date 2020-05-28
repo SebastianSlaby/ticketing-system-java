@@ -1,5 +1,8 @@
 package ticket;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class dbHandler {
 	 
@@ -15,7 +18,6 @@ public class dbHandler {
 	public Connection getcon(String url, String username, String password){
 	    try{
 	        Class.forName("com.mysql.cj.jdbc.Driver");
-	        String unicode="useSSL=false&autoReconnect=true&useUnicode=yes&characterEncoding=UTF-8";
 	        return DriverManager.getConnection(url, username, password);
 	    }catch(Exception ex){
 	        System.out.println(ex.getMessage());
@@ -29,11 +31,11 @@ public class dbHandler {
 		try {
 			Statement st = connection.createStatement();
 			st.executeUpdate(query);
-		}catch (Exception e)
+		}catch (SQLException e)
 	    {
 		      System.err.println("Got an exception! ");
 		      System.err.println(e.getMessage());
+		      e.printStackTrace();
 		    };
 	}
-	
 }

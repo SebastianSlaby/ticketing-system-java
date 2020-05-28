@@ -3,3 +3,11 @@
     -fx-pref-height: 0;
     -fx-min-height: 0;
 }
+.incorrect-field:focused{
+    -fx-faint-focus-color: transparent;
+    -fx-focus-color:rgba(255,0,0,0.6);
+}
+.incorrect-field{
+    -fx-border-color: rgba(255,0,0,1);
+    -fx-border-radius: 2;
+}

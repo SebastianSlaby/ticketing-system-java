@@ -3,8 +3,6 @@ package ticket;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -17,8 +15,19 @@ import javafx.scene.layout.BorderPane;
 import javafx.util.Callback;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Optional;
+
+// FIXME 28.05.2020:
+//  - login window
+//  - registration
+//  -add new Ticket
+//  -database connection
+//  - ticket status ComboBox
+//  - fix the horizontal scrollbars on TableViews
+//  - the Notes have to be assigned to a Ticket
+
 
 public class Controller {
     @FXML
@@ -46,47 +55,51 @@ public class Controller {
     @FXML
     private ContextMenu tableContextMenu;
 
+    private dbHandler handler;
+    private Ticket selectedTicket;
+
+
     public void initialize () {
-        Note note = new Note("xd");
-        Note note1 = new Note("xdd");
-        ObservableList xd = FXCollections.observableArrayList();
-        xd.add(note);
-        xd.add(note1);
-        Notes.getInstance().setNotes(xd);
-        noteTableView.setItems(Notes.getInstance().getNotes());
-        columnNoteName.setCellValueFactory(new PropertyValueFactory<Note, String>("note"));
-        columnNoteCreationDate.setCellValueFactory(new PropertyValueFactory<Note, LocalDate>("dateOfCreation"));
-        noteTableView.getSortOrder().add(columnNoteCreationDate);
-
-
-        Ticket t1 = new Ticket("xd", "kekw", 1, 1, "2019-01-22");
-        Ticket t2 = new Ticket("xdddx", "kekwasda", 1, 1, "2019-03-22");
-        Ticket t3 = new Ticket("xdddx", "kekwasda", 1, 1, "2019-03-22");
-        ObservableList lolw = FXCollections.observableArrayList();
-        lolw.add(t1);
-        lolw.add(t2);
-        lolw.add(t3);
-        Tickets.getInstance().setTickets(lolw);
-        ticketTableView.setItems(Tickets.getInstance().getTickets());
-        columnTicketName.setCellValueFactory(new PropertyValueFactory<Ticket, String>("note"));
-        columnTicketCreationDate.setCellValueFactory(new PropertyValueFactory<Ticket, LocalDate>("dateOfCreation"));
-        ticketTableView.getSortOrder().add(columnTicketCreationDate);
-
-        noteTableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Note>() {
-            @Override
-            public void changed(ObservableValue<? extends Note> observableValue, Note oldValue, Note newValue) {
-                if(newValue != null) {
-                    Note note = (Note) noteTableView.getSelectionModel().getSelectedItem();
-                    noteTextArea.setText(note.getNote());
-                }
-            }
-        });
         ticketTableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Ticket>() {
             @Override
             public void changed(ObservableValue<? extends Ticket> observableValue, Ticket oldValue, Ticket newValue) {
                 if(newValue != null) {
                     Ticket ticket = (Ticket) ticketTableView.getSelectionModel().getSelectedItem();
-                    ticketTextArea.setText(ticket.getDescription());
+                    ticketTextArea.setText(ticket.getTicketDetails());
+                    noteTableView.setItems(ticket.getNotes().getNotes());
+                    noteTableView.getSelectionModel().selectFirst();
+//                    comboTicketState.setItems(selectedTicket.getTicketStatus());
+                }
+            }
+        });
+
+
+
+
+        ticketTableView.setItems(Tickets.getInstance().getTickets());
+        columnTicketName.setCellValueFactory(new PropertyValueFactory<Ticket, String>("ticketTitle"));
+        columnTicketCreationDate.setCellValueFactory(new PropertyValueFactory<Ticket, LocalDate>("ticketDateOfCreation"));
+        ticketTableView.getSortOrder().add(columnTicketCreationDate);
+        ticketTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        ticketTableView.getSelectionModel().selectFirst();
+
+
+        columnNoteName.setCellValueFactory(new PropertyValueFactory<Note, String>("noteTitle"));
+        columnNoteCreationDate.setCellValueFactory(new PropertyValueFactory<Note, LocalDate>("noteDateOfCreation"));
+        noteTableView.getSortOrder().add(columnNoteCreationDate);
+        noteTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        noteTableView.getSelectionModel().selectFirst();
+
+
+        noteTableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Note>() {
+            @Override
+            public void changed(ObservableValue<? extends Note> observableValue, Note oldValue, Note newValue) {
+                if(observableValue == null) {
+
+                }
+                if(newValue != null) {
+                    Note note = (Note) noteTableView.getSelectionModel().getSelectedItem();
+                    noteTextArea.setText(note.getNoteDetails());
                 }
             }
         });
@@ -100,7 +113,11 @@ public class Controller {
                 if(noteTableView.isFocused()) obj = noteTableView.getSelectionModel().getSelectedItem();
                 else if (ticketTableView.isFocused()) obj = ticketTableView.getSelectionModel().getSelectedItem();
                 else obj = null;
-                deleteItem(obj);
+                try {
+                    deleteItem(obj);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         });
         tableContextMenu.getItems().add(deleteMenuItem);
@@ -140,8 +157,7 @@ public class Controller {
                 return cell;
             }
         });
-        ticketTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        ticketTableView.getSelectionModel().selectFirst();
+
 
 
         noteTableView.setRowFactory(new Callback<TableView<Ticket>, TableRow<Ticket>>() {
@@ -161,6 +177,7 @@ public class Controller {
                 return tableRow;
             }
         });
+
         columnNoteName.setCellFactory(new Callback<>() {
             @Override
             public TableCell<Note, String> call(TableColumn<Note, String> noteStringTableColumn) {
@@ -179,13 +196,10 @@ public class Controller {
                 return cell;
             }
         });
-
-        noteTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        noteTableView.getSelectionModel().selectFirst();
     }
 
     @FXML
-    public void showNewNoteDialog () {
+    public void showNewNoteDialog () throws SQLException {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.initOwner(mainBorderPane.getScene().getWindow());
         dialog.setTitle("Create a New Note");
@@ -204,32 +218,74 @@ public class Controller {
 
         Optional<ButtonType> result = dialog.showAndWait();
         if(result.isPresent() && result.get() == ButtonType.OK) {
-            DialogController controller = fxmlLoader.getController();
-            Note newNote = controller.processResults();
+            NoteDialogController controller = fxmlLoader.getController();
+            selectedTicket = (Ticket) ticketTableView.getSelectionModel().getSelectedItem();
+            Note newNote = controller.processResults(selectedTicket);
+//            if(noteTableView.getItems().isEmpty()) {
+//                System.out.println(noteTableView.getItems().isEmpty());
+                noteTableView.setItems(selectedTicket.getNotes().getNotes());
+//            }
             noteTableView.getSelectionModel().select(newNote);
         }
     }
 
-    public void deleteItem (Object obj) {
+    @FXML
+    public void showNewTicketDialog () throws SQLException {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.initOwner(mainBorderPane.getScene().getWindow());
+        dialog.setTitle("Add a New Ticket");
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource("ticketDialog.fxml"));
+        try {
+            dialog.getDialogPane().setContent(fxmlLoader.load());
+        } catch (IOException e) {
+            System.out.println("Couldn't load the dialog");
+            e.printStackTrace();
+            return;
+        }
+
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if(result.isPresent() && result.get() == ButtonType.OK) {
+            TicketDialogController controller = fxmlLoader.getController();
+            Ticket newTicket = controller.processResults();
+            ticketTableView.getSelectionModel().select(newTicket);
+        }
+    }
+
+    public void deleteItem (Object obj) throws SQLException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        if(obj instanceof Note) {
+        if(obj.getClass().equals(Note.class)) {
             alert.setTitle("Delete Resolver Note");
-            alert.setHeaderText("Delete note: " + ((Note) obj).getNote());
-        } else if (obj instanceof Ticket) {
+            alert.setHeaderText("Delete note: " + ((Note) obj).getNoteTitle());
+        } else if (obj.getClass().equals(Ticket.class)) {
             alert.setTitle("Delete Ticket");
-            alert.setHeaderText("Delete ticket: " + ((Note) obj).getNote());
+            alert.setHeaderText("Delete ticket: " + ((Ticket) obj).getTicketTitle());
         }
         alert.setContentText("Are you sure?");
         Optional<ButtonType> result = alert.showAndWait();
 
         if(result.isPresent() && (result.get() == ButtonType.OK)) {
-            if(obj.getClass().equals(Note.class)) Notes.getInstance().deleteResolverNote((Note) obj);
-            else if(obj.getClass().equals(Ticket.class)) Tickets.getInstance().deleteTicket((Ticket) obj);
+            if(obj.getClass().equals(Note.class)) {
+                selectedTicket = (Ticket) ticketTableView.getSelectionModel().getSelectedItem();
+                selectedTicket.getNotes().deleteNote((Note) obj);
+                if(selectedTicket.getNotes().getNotes().isEmpty()){
+                noteTextArea.clear();
+                }
+            }
+            else if(obj.getClass().equals(Ticket.class))  {
+                Tickets.getInstance().deleteTicket((Ticket) obj);
+                if(Tickets.getInstance().getTickets().isEmpty()) {
+                ticketTextArea.clear();
+                }
+            }
         }
     }
 
     @FXML
-    public void deleteSelectedItem () {
+    public void deleteSelectedItem () throws SQLException {
         Object obj;
         if(noteTableView.isFocused()) obj = noteTableView.getSelectionModel().getSelectedItem();
         else if (ticketTableView.isFocused()) obj = ticketTableView.getSelectionModel().getSelectedItem();
@@ -240,7 +296,7 @@ public class Controller {
     }
 
     @FXML
-    public void deleteOnKeyPressed (KeyEvent keyEvent) {
+    public void deleteOnKeyPressed (KeyEvent keyEvent) throws SQLException {
         Object obj;
         if(noteTableView.isFocused()) obj = noteTableView.getSelectionModel().getSelectedItem();
         else if (ticketTableView.isFocused()) obj = ticketTableView.getSelectionModel().getSelectedItem();
