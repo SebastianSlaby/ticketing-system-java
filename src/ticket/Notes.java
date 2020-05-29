@@ -11,6 +11,10 @@ public class Notes {
 //    private static Notes instance = new Notes();
     private ObservableList<Note> notes;
 
+//    public Notes () {
+//        this.notes = FXCollections.observableArrayList();
+//    }
+
 //    public Notes getInstance() {
 //        return instance;
 //    }

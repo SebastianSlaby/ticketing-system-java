@@ -16,9 +16,9 @@ public class TicketDialogController {
     public Ticket processResults () throws SQLException {
         String ticketSummary = ticketTitleField.getText().trim();
         String ticketDescription = ticketDetailsArea.getText().trim();
-        int resolverId = 1; // TODO: 28.05.2020  
-        int creator_id = 1; // TODO: 28.05.2020  
-        int status_id = 1; // TODO: 28.05.2020
+        int resolverId = 0; // assign through database
+        int creator_id = Account.getCurrentlyLoggedIn();
+        int status_id = 1; // 1-unsolved 2-solved
         LocalDate ticketDateOfCreation = LocalDate.now();
 
         String noteSQLQuery = String.format( "INSERT INTO tickets (`summary`, `description`, `resolver_id`, `creator_id`, `status_id`, `date_added`) " +

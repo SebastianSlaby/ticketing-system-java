@@ -1,5 +1,10 @@
 package ticket;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class Account {
 
 	private int userId;
@@ -11,8 +16,7 @@ public class Account {
 	private String password;
 	private int user_type;
 	private boolean confirmDelete;
-	
-	Boolean loggedIn;
+	private static int loggedIn;
 
 	public Account(String username, String firstName, String lastName, String email, String password) {
 		this.username = username;
@@ -21,7 +25,7 @@ public class Account {
 		this.lastName = lastName;
 		this.email = email;
 		this.password = hashPass(password, this.salt);
-		this.user_type = 1;
+		this.user_type = 1; //1-user   2-resolver
 		this.confirmDelete = false;
 	}
 
@@ -69,16 +73,42 @@ public class Account {
 
 
 	//	returns int to set the currently logged in user id
-	int Login(String username, String password) {
-		return 1; // change to user_id
+	private static void setCurrentlyLoggedIn(int userId) {
+		loggedIn = userId;
+	}
+
+	public static int getCurrentlyLoggedIn() {
+		return loggedIn;
+	}
+
+	public static int comparePassword(String username, String password) throws SQLException {
+		String passwordSQLQuery = String.format("SELECT id, pass, salt FROM users WHERE username='%s';", username);
+		String dbPassword = null, dbSalt = null;
+		int id = -1;
+		try (
+				Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
+				PreparedStatement statement = connection.prepareStatement(passwordSQLQuery);
+				ResultSet resultSet = statement.executeQuery();
+				) {
+			while (resultSet.next()) {
+				id = resultSet.getInt("id");
+				dbPassword = resultSet.getString("pass");
+				dbSalt = resultSet.getString("salt");
+			}
+		}
+		setCurrentlyLoggedIn(id);
+		if(hashPass(password, dbSalt).equals(dbPassword)){
+			return id;
+		}
+		return id;
 	}
 	
-	String genSalt() {
+	private String genSalt() {
 		//generate random salt
 		return "salt";
 	}
 	
-	String hashPass(String pass, String salt) {
+	private static String hashPass(String pass, String salt) {
 		//create hash based on provided pass and salt
 		return "test123";
 	}

@@ -13,6 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class LoginController {
@@ -25,7 +26,7 @@ public class LoginController {
 
 
     @FXML
-    public void loginUser(ActionEvent event) {
+    public void loginUser(ActionEvent event) throws SQLException {
 
         ArrayList<TextField> fields = new ArrayList<>();
         fields.add(usernameField);
@@ -34,6 +35,24 @@ public class LoginController {
 
         String username = usernameField.getText().trim();
         String password = passwordField.getText().trim();
+
+        if(Account.comparePassword(username, password) > 0) {
+            Parent root;
+            try {
+                Tickets.getInstance().loadTickets();
+                root = FXMLLoader.load(getClass().getResource("/ticket/mainWindow.fxml"));
+                Stage stage = new Stage();
+                stage.setTitle("Ticketing System");
+                stage.setScene(new Scene(root, 800, 600));
+                stage.show();
+                ((Node) (event.getSource())).getScene().getWindow().hide();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            highlightField(passwordField);
+        }
     }
 
     public boolean validateFields (ArrayList<TextField> fields) {

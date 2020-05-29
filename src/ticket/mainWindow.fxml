@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -18,10 +19,10 @@
 
 <BorderPane fx:id="mainBorderPane" prefHeight="600.0" prefWidth="800.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ticket.Controller">
    <left>
-      <TableView fx:id="ticketTableView" minWidth="-Infinity" onKeyPressed="#deleteOnKeyPressed" prefHeight="200.0" styleClass="noheader" BorderPane.alignment="CENTER">
+      <TableView fx:id="ticketTableView" minWidth="-Infinity" onKeyPressed="#deleteOnKeyPressed" prefHeight="200.0" prefWidth="260.0" styleClass="noheader" BorderPane.alignment="CENTER">
         <columns>
-          <TableColumn fx:id="columnTicketName" editable="false" sortable="false" text="Ticket Name" />
-          <TableColumn fx:id="columnTicketCreationDate" editable="false" maxWidth="120.0" minWidth="100.0" prefWidth="100.0" sortType="DESCENDING" text="Creation Date" />
+          <TableColumn fx:id="columnTicketName" editable="false" maxWidth="-1.0" minWidth="155.0" prefWidth="-1.0" sortable="false" text="Ticket Name" />
+          <TableColumn fx:id="columnTicketCreationDate" editable="false" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Creation Date" />
         </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -36,7 +37,7 @@
                   <Insets bottom="7.0" left="7.0" right="7.0" top="7.0" />
                </VBox.margin>
             </TextArea>
-            <GridPane VBox.vgrow="ALWAYS">
+            <GridPane fx:id="notesGridPane" VBox.vgrow="ALWAYS">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -49,10 +50,10 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" />
               </rowConstraints>
                <children>
-                  <TableView fx:id="noteTableView" onKeyPressed="#deleteOnKeyPressed" prefHeight="200.0" styleClass="noheader" GridPane.columnSpan="2" GridPane.rowSpan="3">
+                  <TableView fx:id="noteTableView" onKeyPressed="#deleteOnKeyPressed" prefHeight="200.0" prefWidth="260.0" styleClass="noheader" GridPane.columnSpan="2" GridPane.rowSpan="3">
                      <columns>
-                        <TableColumn fx:id="columnNoteName" editable="false" sortable="false" text="Resolver Note" />
-                        <TableColumn fx:id="columnNoteCreationDate" editable="false" maxWidth="120.0" minWidth="100.0" sortType="DESCENDING" text="Creation Date" />
+                        <TableColumn fx:id="columnNoteName" editable="false" maxWidth="-1.0" minWidth="155.0" sortable="false" text="Resolver Note" />
+                        <TableColumn fx:id="columnNoteCreationDate" editable="false" maxWidth="-1.0" minWidth="100.0" sortType="DESCENDING" text="Creation Date" />
                      </columns>
                      <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -82,14 +83,14 @@
       </VBox>
    </center>
    <top>
-      <MenuBar BorderPane.alignment="CENTER">
+      <MenuBar fx:id="mainMenuBar" BorderPane.alignment="CENTER">
         <menus>
-          <Menu mnemonicParsing="false" text="File">
+          <Menu fx:id="filesMenu" mnemonicParsing="false" text="File">
             <items>
                   <Menu mnemonicParsing="false" text="New...">
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#showNewTicketDialog" text="New Ticket" />
-                      <MenuItem mnemonicParsing="false" onAction="#showNewNoteDialog" text="New Note" />
+                      <MenuItem fx:id="menuItemNewNote" mnemonicParsing="false" onAction="#showNewNoteDialog" text="New Note" />
                     </items>
                   </Menu>
                 <SeparatorMenuItem />
@@ -98,6 +99,7 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
             <items>
+                  <CheckMenuItem fx:id="hideTicketsMenuItem" mnemonicParsing="false" onAction="#hideSolvedTickets" text="Hide Solved Tickets" />
               <MenuItem mnemonicParsing="false" onAction="#deleteSelectedItem" text="Delete" />
             </items>
           </Menu>
