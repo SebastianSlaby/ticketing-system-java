@@ -1,5 +1,6 @@
 package ticket;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.IOException;
@@ -11,9 +12,9 @@ public class Notes {
 //    private static Notes instance = new Notes();
     private ObservableList<Note> notes;
 
-//    public Notes () {
-//        this.notes = FXCollections.observableArrayList();
-//    }
+    public Notes () {
+        this.notes = FXCollections.observableArrayList();
+    }
 
 //    public Notes getInstance() {
 //        return instance;

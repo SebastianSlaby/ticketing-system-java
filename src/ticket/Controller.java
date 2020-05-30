@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
@@ -100,20 +101,44 @@ public class Controller {
         initComboBox();
         showNotesIfResolver(isResolver(Account.getCurrentlyLoggedIn()));
 
+        if(filteredTicketList.isEmpty()) {
+            hideTicketsMenuItem.setDisable(true);
+            menuItemNewNote.setVisible(false);
+        }
 
         ticketTableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Ticket>() {
             @Override
             public void changed(ObservableValue<? extends Ticket> observableValue, Ticket oldValue, Ticket newValue) {
                 if(newValue != null) {
-                    Ticket ticket = (Ticket) ticketTableView.getSelectionModel().getSelectedItem();
-                    ticketTextArea.setText(ticket.getTicketDetails());
-                    noteTableView.setItems(ticket.getNotes().getNotes());
+                    selectedTicket = (Ticket) ticketTableView.getSelectionModel().getSelectedItem();
+                    ticketTextArea.setText(selectedTicket.getTicketDetails());
+                    filteredNoteList = new FilteredList<Note>(selectedTicket.getNotes().getNotes(), wantAllNotes);
+                    noteTableView.setItems(filteredNoteList);
                     noteTableView.getSelectionModel().selectFirst();
                     if(noteTableView.getSelectionModel().getSelectedItem() == null) {
-//                        Note selectedNote = (Note) noteTableView.getSelectionModel().getSelectedItem();
                         noteTextArea.setText("");
                     }
-                    comboTicketState.getSelectionModel().select(ticket.getStatusId()-1);
+                    comboTicketState.getSelectionModel().select(selectedTicket.getStatusId()-1);
+                }
+            }
+        });
+        ticketTableView.getItems().addListener(new ListChangeListener() {
+            @Override
+            public void onChanged(Change change) {
+                if(ticketTableView.getItems().isEmpty()) {
+                    ticketTextArea.clear();
+                    noteTextArea.clear();
+                    filteredNoteList.setPredicate(wantNoNotes);
+                    buttonNewNote.setDisable(true);
+                    comboTicketState.setDisable(true);
+                    menuItemNewNote.setVisible(false);
+                    if(!hideTicketsMenuItem.isSelected())
+                        hideTicketsMenuItem.setDisable(true);
+                } else {
+                    buttonNewNote.setDisable(false);
+                    hideTicketsMenuItem.setDisable(false);
+                    comboTicketState.setDisable(false);
+                    menuItemNewNote.setVisible(true);
                 }
             }
         });
@@ -225,9 +250,6 @@ public class Controller {
                 return false;
             }
         };
-//        if(!selectedTicket.getNotes().getNotes().isEmpty()) {
-//            filteredNoteList = new FilteredList<Note>(selectedTicket.getNotes().getNotes(), wantAllNotes);
-//        }
 
         if(selectedTicket.getNotes().getNotes() == null) {
             selectedTicket.getNotes().setNotes(FXCollections.observableArrayList());
@@ -304,6 +326,9 @@ public class Controller {
                             e.printStackTrace();
                         }
                     }
+                    if(hideTicketsMenuItem.isSelected()) {
+                        hideSolvedTickets();
+                    }
                 }
             }
         });
@@ -327,22 +352,22 @@ public class Controller {
     @FXML
     public void hideSolvedTickets () {
         selectedTicket = (Ticket) ticketTableView.getSelectionModel().getSelectedItem();
-        if(selectedTicket == null) return;
         if(hideTicketsMenuItem.isSelected()) {
+            filteredTicketList.setPredicate(wantAllTickets);
             filteredTicketList.setPredicate(wantUnsolvedTickets);
-            if(filteredTicketList.isEmpty()) {
-                ticketTextArea.clear();
-                noteTextArea.clear();
-                noteTableView.setDisable(true);
-                filteredNoteList.setPredicate(wantNoNotes);
-            } else if (filteredTicketList.contains(selectedTicket)) {
+            if (filteredTicketList.contains(selectedTicket)) {
                 ticketTableView.getSelectionModel().select(selectedTicket);
             } else {
                 ticketTableView.getSelectionModel().selectFirst();
             }
         } else {
             filteredTicketList.setPredicate(wantAllTickets);
-            ticketTableView.getSelectionModel().select(selectedTicket);
+            filteredNoteList.setPredicate(wantAllNotes);
+            if(selectedTicket != null) {
+                ticketTableView.getSelectionModel().select(selectedTicket);
+            } else {
+                ticketTableView.getSelectionModel().selectFirst();
+            }
             noteTableView.setDisable(false);
         }
 
@@ -402,7 +427,7 @@ public class Controller {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             TicketDialogController controller = fxmlLoader.getController();
             Ticket newTicket = controller.processResults();
-            System.out.println(newTicket.getTicketTitle());
+
             ticketTableView.getSelectionModel().select(newTicket);
         }
         if (!haveNotesBeenInitialized) {
@@ -495,11 +520,6 @@ public class Controller {
             }
             else if(obj.getClass().equals(Ticket.class))  {
                 Tickets.getInstance().deleteTicket((Ticket) obj);
-                if(filteredTicketList.isEmpty()) {
-                    ticketTextArea.clear();
-                    noteTextArea.clear();
-                    filteredNoteList.setPredicate(wantNoNotes);
-                }
             }
         }
 
