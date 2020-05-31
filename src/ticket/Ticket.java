@@ -72,7 +72,7 @@ public class Ticket{
 
 	public void setStatusId(int ticketId, int statusId) throws SQLException {
 		this.statusId = statusId;
-		String statusIdSQLQuery = String.format("UPDATE tickets SET status_id='%d' WHERE id=%d", statusId, ticketId);
+		String statusIdSQLQuery = String.format("UPDATE tickets SET status_id='%d' WHERE id=%d;", statusId, ticketId);
 
 		try(
 					Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
@@ -87,7 +87,7 @@ public class Ticket{
 
 	private void setTicketDateOfClosure(int id) {
 		Date dateOfClosure = Date.valueOf(LocalDate.now());
-		String dateOfClosureSQLQuery = String.format("UPDATE tickets SET date_closed='%s' WHERE id=%d", dateOfClosure, id);
+		String dateOfClosureSQLQuery = String.format("UPDATE tickets SET date_closed='%s' WHERE id=%d;", dateOfClosure, id);
 		try(
 				Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
 				PreparedStatement statement = connection.prepareStatement(dateOfClosureSQLQuery);

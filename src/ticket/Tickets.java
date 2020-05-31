@@ -47,7 +47,12 @@ public class Tickets {
     public void loadTickets () throws SQLException {
         tickets = FXCollections.observableArrayList();
         int userId = Account.getCurrentlyLoggedIn();
-        String loadTicketsSQLQuery = String.format("SELECT * FROM tickets WHERE creator_id=%d OR resolver_id=%d;", userId, userId);
+        String loadTicketsSQLQuery;
+        if(Controller.isResolver(userId)) {
+            loadTicketsSQLQuery = "SELECT * FROM tickets;";
+        } else {
+            loadTicketsSQLQuery = String.format("SELECT * FROM tickets WHERE creator_id=%d;", userId);
+        }
         try (
                 Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
                 PreparedStatement statement1 = connection.prepareStatement(loadTicketsSQLQuery);

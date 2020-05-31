@@ -146,7 +146,7 @@ public class RegisterController {
     }
 
     public boolean isUniqueUsername (String username) {
-        String isUniqueUsernameSQLQuery = String.format("SELECT COUNT(*) FROM users WHERE username='%s'", username);
+        String isUniqueUsernameSQLQuery = String.format("SELECT COUNT(*) FROM users WHERE username='%s';", username);
         boolean isUnique = false;
         int count = 0;
         try(

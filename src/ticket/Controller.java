@@ -218,19 +218,19 @@ public class Controller {
 
     }
 
-    public boolean isResolver(int userId) throws SQLException {
-        String isResolverSQLQuery = String.format("SELECT user_type FROM users WHERE id='%d';", userId);
-        int userType = -1;
+    public static boolean isResolver(int userId) throws SQLException {
+        String isResolverSQLQuery = String.format("SELECT COUNT(*) FROM users WHERE id=%d AND user_type=%d;", userId, 2);
+        int count = -1;
         try(
                 Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
                 PreparedStatement statement = connection.prepareStatement(isResolverSQLQuery);
                 ResultSet resultSet = statement.executeQuery();
                 ) {
             while(resultSet.next()) {
-                userType = resultSet.getInt("user_type");
+                count = resultSet.getInt(1);
             }
         }
-        if(userType == 2) return true;
+        if(count > 0) return true;
         return false;
     }
 
@@ -453,7 +453,7 @@ public class Controller {
     }
 
     public void deleteItem (Object obj) throws SQLException {
-        String doNotShowSQLQuery = String.format("SELECT confirm_delete FROM users WHERE id=%d", Account.getCurrentlyLoggedIn());
+        String doNotShowSQLQuery = String.format("SELECT confirm_delete FROM users WHERE id=%d;", Account.getCurrentlyLoggedIn());
         boolean hideAlert = false;
         try (
                 Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
@@ -504,7 +504,7 @@ public class Controller {
                     Tickets.getInstance().deleteTicket((Ticket) obj);
                 }
                 if(optOutAction.get()) {
-                    String changeToTrueSQLQuery = String.format("UPDATE users SET confirm_delete=%b WHERE id=%d", optOutAction.get(), Account.getCurrentlyLoggedIn());
+                    String changeToTrueSQLQuery = String.format("UPDATE users SET confirm_delete=%b WHERE id=%d;", optOutAction.get(), Account.getCurrentlyLoggedIn());
                     try (
                             Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
                             PreparedStatement statement = connection.prepareStatement(changeToTrueSQLQuery);
@@ -553,7 +553,7 @@ public class Controller {
 
     public void initComboBox() {
         ObservableList<String> ticketStatus = FXCollections.observableArrayList();
-        String getTicketStatusSQLQuery = String.format("SELECT name FROM ticket_status");
+        String getTicketStatusSQLQuery = String.format("SELECT name FROM ticket_status;");
         try(
                 Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
                 PreparedStatement statement = connection.prepareStatement(getTicketStatusSQLQuery);
