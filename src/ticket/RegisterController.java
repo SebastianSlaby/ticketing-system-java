@@ -81,8 +81,8 @@ public class RegisterController {
 
         try(
                 Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
-                PreparedStatement statement = connection.prepareStatement(accountSQLQuery, Statement.RETURN_GENERATED_KEYS);
-                ) {
+                PreparedStatement statement = connection.prepareStatement(accountSQLQuery, Statement.RETURN_GENERATED_KEYS)
+        ) {
             statement.executeUpdate();
             ResultSet resultSet = statement.getGeneratedKeys();
             int accountId = 0;
@@ -152,7 +152,7 @@ public class RegisterController {
         try(
                 Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
                 PreparedStatement statement = connection.prepareStatement(isUniqueUsernameSQLQuery);
-                ResultSet resultSet = statement.executeQuery();
+                ResultSet resultSet = statement.executeQuery()
         ) {
             while(resultSet.next()) {
                 count = resultSet.getInt(1);

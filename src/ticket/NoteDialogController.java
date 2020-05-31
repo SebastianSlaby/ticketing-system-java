@@ -26,8 +26,8 @@ public class NoteDialogController {
 
         try (
                 Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
-                PreparedStatement statement = connection.prepareStatement(noteSQLQuery, Statement.RETURN_GENERATED_KEYS);
-                ) {
+                PreparedStatement statement = connection.prepareStatement(noteSQLQuery, Statement.RETURN_GENERATED_KEYS)
+        ) {
             int insertAndGetId  = statement.executeUpdate();
             ResultSet resultSet = statement.getGeneratedKeys();
             int noteId = 0;

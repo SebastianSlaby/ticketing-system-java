@@ -76,8 +76,8 @@ public class Ticket{
 
 		try(
 					Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
-					PreparedStatement statement = connection.prepareStatement(statusIdSQLQuery);
-			) {
+					PreparedStatement statement = connection.prepareStatement(statusIdSQLQuery)
+		) {
 			statement.executeUpdate();
 			if(statusId == 2){
 			setTicketDateOfClosure(ticketId);
@@ -90,7 +90,7 @@ public class Ticket{
 		String dateOfClosureSQLQuery = String.format("UPDATE tickets SET date_closed='%s' WHERE id=%d;", dateOfClosure, id);
 		try(
 				Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
-				PreparedStatement statement = connection.prepareStatement(dateOfClosureSQLQuery);
+				PreparedStatement statement = connection.prepareStatement(dateOfClosureSQLQuery)
 		) {
 			statement.executeUpdate();
 			this.ticketDateOfClosure = dateOfClosure.toLocalDate();

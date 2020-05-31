@@ -36,7 +36,7 @@ public class Tickets {
         try (
                 Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
                 PreparedStatement statement1 = connection.prepareStatement(deleteTicketSQLQuery);
-                PreparedStatement statement2 = connection.prepareStatement(deleteRelatedNotesSQLQuery);
+                PreparedStatement statement2 = connection.prepareStatement(deleteRelatedNotesSQLQuery)
         ) {
             statement1.executeUpdate();
             statement2.executeUpdate();
@@ -56,8 +56,8 @@ public class Tickets {
         try (
                 Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
                 PreparedStatement statement1 = connection.prepareStatement(loadTicketsSQLQuery);
-                ResultSet resultSet1 = statement1.executeQuery();
-                ) {
+                ResultSet resultSet1 = statement1.executeQuery()
+        ) {
             ObservableList<Ticket> ticketsOL = FXCollections.observableArrayList();
 
             while(resultSet1.next()) {
@@ -77,8 +77,8 @@ public class Tickets {
 
                 try (
                         PreparedStatement statement2 = connection.prepareStatement(loadNotesSQLQuery);
-                        ResultSet resultSet2 = statement2.executeQuery();
-                        ) {
+                        ResultSet resultSet2 = statement2.executeQuery()
+                ) {
                     while (resultSet2.next()) {
                         int noteId = resultSet2.getInt("id");
                         String noteTitle = resultSet2.getString("summary");

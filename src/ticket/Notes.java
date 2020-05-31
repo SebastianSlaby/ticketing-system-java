@@ -34,7 +34,7 @@ public class Notes {
     public void deleteNote(Note note) throws SQLException {
         try (
                 Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
-                PreparedStatement statement1 = connection.prepareStatement("DELETE FROM notes WHERE id=" + note.getNoteId() + ";");
+                PreparedStatement statement1 = connection.prepareStatement("DELETE FROM notes WHERE id=" + note.getNoteId() + ";")
         ) {
             statement1.executeUpdate();
             notes.remove(note);

@@ -88,8 +88,8 @@ public class Account {
 		try (
 				Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
 				PreparedStatement statement = connection.prepareStatement(passwordSQLQuery);
-				ResultSet resultSet = statement.executeQuery();
-				) {
+				ResultSet resultSet = statement.executeQuery()
+		) {
 			while (resultSet.next()) {
 				id = resultSet.getInt("id");
 				dbPassword = resultSet.getString("pass");
@@ -98,7 +98,7 @@ public class Account {
 		}
 		setCurrentlyLoggedIn(id);
 		if(hashPass(password, dbSalt).equals(dbPassword)){
-			return id;
+			id = getCurrentlyLoggedIn();
 		}
 		return id;
 	}

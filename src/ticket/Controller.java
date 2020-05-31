@@ -224,14 +224,13 @@ public class Controller {
         try(
                 Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
                 PreparedStatement statement = connection.prepareStatement(isResolverSQLQuery);
-                ResultSet resultSet = statement.executeQuery();
-                ) {
+                ResultSet resultSet = statement.executeQuery()
+        ) {
             while(resultSet.next()) {
                 count = resultSet.getInt(1);
             }
         }
-        if(count > 0) return true;
-        return false;
+        return count > 0;
     }
 
 
@@ -458,8 +457,8 @@ public class Controller {
         try (
                 Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
                 PreparedStatement statement = connection.prepareStatement(doNotShowSQLQuery);
-                ResultSet resultSet = statement.executeQuery();
-                ) {
+                ResultSet resultSet = statement.executeQuery()
+        ) {
             while(resultSet.next()) {
                 hideAlert = resultSet.getBoolean("confirm_delete");
             }
@@ -507,7 +506,7 @@ public class Controller {
                     String changeToTrueSQLQuery = String.format("UPDATE users SET confirm_delete=%b WHERE id=%d;", optOutAction.get(), Account.getCurrentlyLoggedIn());
                     try (
                             Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
-                            PreparedStatement statement = connection.prepareStatement(changeToTrueSQLQuery);
+                            PreparedStatement statement = connection.prepareStatement(changeToTrueSQLQuery)
                     ) {
                         statement.executeUpdate();
                     }
@@ -553,11 +552,11 @@ public class Controller {
 
     public void initComboBox() {
         ObservableList<String> ticketStatus = FXCollections.observableArrayList();
-        String getTicketStatusSQLQuery = String.format("SELECT name FROM ticket_status;");
+        String getTicketStatusSQLQuery = "SELECT name FROM ticket_status;";
         try(
                 Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
                 PreparedStatement statement = connection.prepareStatement(getTicketStatusSQLQuery);
-                ResultSet resultSet = statement.executeQuery();
+                ResultSet resultSet = statement.executeQuery()
         ) {
             while(resultSet.next()) {
                 ticketStatus.add(resultSet.getString("name"));
