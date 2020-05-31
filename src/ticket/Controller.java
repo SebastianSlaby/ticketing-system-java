@@ -277,6 +277,15 @@ public class Controller {
             }
         });
 
+        noteTableView.getItems().addListener(new ListChangeListener() {
+            @Override
+            public void onChanged(Change change) {
+                if(filteredNoteList.isEmpty()) {
+                    noteTextArea.clear();
+                }
+            }
+        });
+
         noteTableView.setRowFactory(new Callback<TableView<Ticket>, TableRow<Ticket>>() {
             @Override
             public TableRow<Ticket> call(TableView tableView) {
@@ -327,7 +336,7 @@ public class Controller {
                         }
                     }
                     if(hideTicketsMenuItem.isSelected()) {
-                        hideSolvedTickets();
+                        hideClosedTickets();
                     }
                 }
             }
@@ -350,7 +359,7 @@ public class Controller {
     }
 
     @FXML
-    public void hideSolvedTickets () {
+    public void hideClosedTickets() {
         selectedTicket = (Ticket) ticketTableView.getSelectionModel().getSelectedItem();
         if(hideTicketsMenuItem.isSelected()) {
             filteredTicketList.setPredicate(wantAllTickets);
@@ -490,15 +499,9 @@ public class Controller {
                 if(obj.getClass().equals(Note.class)) {
                     selectedTicket = (Ticket) ticketTableView.getSelectionModel().getSelectedItem();
                     selectedTicket.getNotes().deleteNote((Note) obj);
-                    if(filteredNoteList.isEmpty()){
-                        noteTextArea.clear();
-                    }
                 }
                 else if(obj.getClass().equals(Ticket.class))  {
                     Tickets.getInstance().deleteTicket((Ticket) obj);
-                    if(filteredTicketList.isEmpty()) {
-                        ticketTextArea.clear();
-                    }
                 }
                 if(optOutAction.get()) {
                     String changeToTrueSQLQuery = String.format("UPDATE users SET confirm_delete=%b WHERE id=%d", optOutAction.get(), Account.getCurrentlyLoggedIn());
@@ -514,9 +517,6 @@ public class Controller {
             if(obj.getClass().equals(Note.class)) {
                 selectedTicket = (Ticket) ticketTableView.getSelectionModel().getSelectedItem();
                 selectedTicket.getNotes().deleteNote((Note) obj);
-                if(filteredNoteList.isEmpty()){
-                    noteTextArea.clear();
-                }
             }
             else if(obj.getClass().equals(Ticket.class))  {
                 Tickets.getInstance().deleteTicket((Ticket) obj);
@@ -552,7 +552,19 @@ public class Controller {
     }
 
     public void initComboBox() {
-        ObservableList<String> ticketStatus = FXCollections.observableArrayList("Unsolved", "Solved");
+        ObservableList<String> ticketStatus = FXCollections.observableArrayList();
+        String getTicketStatusSQLQuery = String.format("SELECT name FROM ticket_status");
+        try(
+                Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
+                PreparedStatement statement = connection.prepareStatement(getTicketStatusSQLQuery);
+                ResultSet resultSet = statement.executeQuery();
+        ) {
+            while(resultSet.next()) {
+                ticketStatus.add(resultSet.getString("name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         comboTicketState.setItems(ticketStatus);
         selectedTicket = (Ticket) ticketTableView.getSelectionModel().getSelectedItem();
         if(selectedTicket != null) {

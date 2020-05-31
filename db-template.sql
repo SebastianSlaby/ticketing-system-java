@@ -94,7 +94,7 @@ CREATE TABLE `users` (
   `email` varchar(1024) NOT NULL,
   `user_type` int(255) NOT NULL,
   `confirm_delete` boolean NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 -- --------------------------------------------------------
 

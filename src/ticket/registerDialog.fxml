@@ -137,6 +137,31 @@
          <Insets top="10.0" />
       </GridPane.margin>
    </HBox>
+   <Label fx:id="promptUsername" GridPane.columnIndex="1" GridPane.valignment="TOP">
+      <GridPane.margin>
+         <Insets top="10.0" />
+      </GridPane.margin>
+   </Label>
+   <Label fx:id="promptFirstName" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="TOP">
+      <GridPane.margin>
+         <Insets top="10.0" />
+      </GridPane.margin>
+   </Label>
+   <Label fx:id="promptLastName" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="TOP">
+      <GridPane.margin>
+         <Insets top="10.0" />
+      </GridPane.margin>
+   </Label>
+   <Label fx:id="promptEmail" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.valignment="TOP">
+      <GridPane.margin>
+         <Insets top="10.0" />
+      </GridPane.margin>
+   </Label>
+   <Label fx:id="promptPassword" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="TOP">
+      <GridPane.margin>
+         <Insets top="10.0" />
+      </GridPane.margin>
+   </Label>
    <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" percentWidth="40.0" />
       <ColumnConstraints hgrow="SOMETIMES" />

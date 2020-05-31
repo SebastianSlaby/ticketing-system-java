@@ -99,7 +99,7 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
             <items>
-                  <CheckMenuItem fx:id="hideTicketsMenuItem" mnemonicParsing="false" onAction="#hideSolvedTickets" text="Hide Solved Tickets" />
+                  <CheckMenuItem fx:id="hideTicketsMenuItem" mnemonicParsing="false" onAction="#hideClosedTickets" text="Hide Closed Tickets" />
               <MenuItem mnemonicParsing="false" onAction="#deleteSelectedItem" text="Delete" />
             </items>
           </Menu>

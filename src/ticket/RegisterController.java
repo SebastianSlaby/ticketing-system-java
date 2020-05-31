@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -28,10 +29,24 @@ public class RegisterController {
     private PasswordField passwordField;
     @FXML
     private PasswordField confirmPasswordField;
+    @FXML
+    private Label promptUsername;
+    @FXML
+    private Label promptFirstName;
+    @FXML
+    private Label promptLastName;
+    @FXML
+    private Label promptEmail;
+    @FXML
+    private Label promptPassword;
+
+    private ArrayList<Label> prompts;
+    private String[] fieldNames;
 
 
     @FXML
     public void registerUser (ActionEvent event) throws SQLException {
+        fieldNames = new String[]{"Username", "First Name", "Last Name", "Email", "Password"};
         ArrayList<TextField> fields = new ArrayList<>();
         fields.add(usernameField);
         fields.add(firstNameField);
@@ -40,7 +55,14 @@ public class RegisterController {
         fields.add(passwordField);
         fields.add(confirmPasswordField);
 
-        if(!validateFields(fields)) return;
+        prompts = new ArrayList<>();
+        prompts.add(promptUsername);
+        prompts.add(promptFirstName);
+        prompts.add(promptLastName);
+        prompts.add(promptEmail);
+        prompts.add(promptPassword);
+
+        if(validateFields(fields)) return;
 
         String username = usernameField.getText().trim();
         String firstName = firstNameField.getText().trim();
@@ -75,24 +97,43 @@ public class RegisterController {
     }
 
     public boolean validateFields (ArrayList<TextField> fields) {
-        boolean hasError = true;
-        fields.forEach((el) -> {
-//            el.getStyleClass().remove("focused-field");
-            el.getStyleClass().remove("incorrect-field");
-        });
+        boolean hasError = false;
+//        fields.forEach((el) -> {
+////            el.getStyleClass().remove("focused-field");
+//            el.getStyleClass().remove("incorrect-field");
+//        });
+        for(int i=0; i < fields.size(); i++) {
+            fields.get(i).getStyleClass().remove("incorrect-field");
+            if(i < prompts.size()) {
+                prompts.get(i).setText("");
+            }
+        }
 
-        if(!isValidEmail(emailField.getText().trim())) {
+        if(!usernameField.getText().trim().isEmpty() && !isUniqueUsername(usernameField.getText().trim())) {
+            highlightField(usernameField);
+            promptUsername.setText("This username has already been taken");
+            hasError=true;
+        }
+
+        if(!emailField.getText().trim().isEmpty() && !isValidEmail(emailField.getText().trim())) {
             highlightField(emailField);
-            hasError = false;
+            promptEmail.setText("Please enter a valid email");
+            hasError = true;
         }
-        if(!passwordField.getText().trim().equals(confirmPasswordField.getText().trim())) {
+
+        if(!passwordField.getText().trim().isEmpty() && !confirmPasswordField.getText().trim().isEmpty() && !passwordField.getText().trim().equals(confirmPasswordField.getText().trim())) {
             highlightField(confirmPasswordField);
-            hasError = false;
+            promptPassword.setText("Confirm Password does not match the Password");
+            hasError = true;
         }
+
         for(int i = 0; i < fields.size(); i++) {
             if (fields.get(i).getText().trim().isEmpty()) {
                 highlightField(fields.get(i));
-                hasError = false;
+                if(i < prompts.size()) {
+                    prompts.get(i).setText(fieldNames[i] + " cannot be empty");
+                }
+                hasError = true;
             }
         }
         return hasError;
@@ -104,6 +145,25 @@ public class RegisterController {
         }
     }
 
+    public boolean isUniqueUsername (String username) {
+        String isUniqueUsernameSQLQuery = String.format("SELECT COUNT(*) FROM users WHERE username='%s'", username);
+        boolean isUnique = false;
+        int count = 0;
+        try(
+                Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
+                PreparedStatement statement = connection.prepareStatement(isUniqueUsernameSQLQuery);
+                ResultSet resultSet = statement.executeQuery();
+        ) {
+            while(resultSet.next()) {
+                count = resultSet.getInt(1);
+                System.out.println(count);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if(count == 0) isUnique = true;
+        return isUnique;
+    }
 
     public boolean isValidEmail(String email) {
         String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
