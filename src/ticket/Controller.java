@@ -179,7 +179,6 @@ public class Controller {
             }
         });
 
-
         tableContextMenu = new ContextMenu();
         MenuItem deleteMenuItem = new MenuItem("Delete");
         deleteMenuItem.setOnAction(new EventHandler<ActionEvent>() {
@@ -337,6 +336,7 @@ public class Controller {
                     if(hideTicketsMenuItem.isSelected()) {
                         hideClosedTickets();
                     }
+
                 }
             }
         });

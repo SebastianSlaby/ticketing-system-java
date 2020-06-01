@@ -79,22 +79,32 @@ public class Ticket{
 					PreparedStatement statement = connection.prepareStatement(statusIdSQLQuery)
 		) {
 			statement.executeUpdate();
-			if(statusId == 2){
-			setTicketDateOfClosure(ticketId);
+			if(statusId > 1 && this.ticketDateOfClosure == null){
+				setTicketDateOfClosure(ticketId, Date.valueOf(LocalDate.now()));
+			} else if (statusId == 1) {
+				setTicketDateOfClosure(ticketId, null);
 			}
 		}
 	}
 
-	private void setTicketDateOfClosure(int id) {
-		Date dateOfClosure = Date.valueOf(LocalDate.now());
-		String dateOfClosureSQLQuery = String.format("UPDATE tickets SET date_closed='%s' WHERE id=%d;", dateOfClosure, id);
+	private void setTicketDateOfClosure(int id, Date date) {
+		Date dateOfClosure = date;
+		String dateOfClosureSQLQuery;
+		if(dateOfClosure != null) {
+			dateOfClosureSQLQuery = String.format("UPDATE tickets SET date_closed='%s' WHERE id=%d;", dateOfClosure, id);
+		} else {
+			dateOfClosureSQLQuery = String.format("UPDATE tickets SET date_closed=null WHERE id=%d;", id);
+		}
 		try(
 				Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
 				PreparedStatement statement = connection.prepareStatement(dateOfClosureSQLQuery)
 		) {
 			statement.executeUpdate();
-			this.ticketDateOfClosure = dateOfClosure.toLocalDate();
-
+			if(dateOfClosure != null) {
+				this.ticketDateOfClosure = dateOfClosure.toLocalDate();
+			} else {
+				this.ticketDateOfClosure = null;
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
