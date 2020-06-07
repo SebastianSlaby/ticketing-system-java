@@ -11,7 +11,7 @@
 ## Stack
 * Java
 * MySQL
-* GUI library to be determined
+* JavaFX
 
 ## Assumptions
 
