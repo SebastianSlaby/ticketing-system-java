@@ -1,15 +1,21 @@
 package ticket;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Base64;
 
 public class Account {
 
 	private int userId;
 	private String username;
-	private String salt;
+	private byte[] salt;
 	private String firstName;
 	private String lastName;
 	private String email;
@@ -18,7 +24,7 @@ public class Account {
 	private boolean confirmDelete;
 	private static int loggedIn;
 
-	public Account(String username, String firstName, String lastName, String email, String password) {
+	public Account(String username, String firstName, String lastName, String email, String password) throws NoSuchProviderException, NoSuchAlgorithmException {
 		this.username = username;
 		this.salt = genSalt();
 		this.firstName = firstName;
@@ -41,7 +47,7 @@ public class Account {
 		return username;
 	}
 
-	public String getSalt() {
+	public byte[] getSalt() {
 		return salt;
 	}
 
@@ -81,36 +87,50 @@ public class Account {
 		return loggedIn;
 	}
 
-	public static int comparePassword(String username, String password) throws SQLException {
+	public static int comparePassword(String username, String password) throws SQLException, UnsupportedEncodingException {
 		String passwordSQLQuery = String.format("SELECT id, pass, salt FROM users WHERE username='%s';", username);
 		String dbPassword = null, dbSalt = null;
-		int id = -1;
+		int loggedId = -1, dbId = -1;
 		try (
 				Connection connection =  new dbHandler("jdbc:mysql://localhost/ticketing?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","").connection;
 				PreparedStatement statement = connection.prepareStatement(passwordSQLQuery);
 				ResultSet resultSet = statement.executeQuery()
 		) {
 			while (resultSet.next()) {
-				id = resultSet.getInt("id");
+				dbId = resultSet.getInt("id");
 				dbPassword = resultSet.getString("pass");
 				dbSalt = resultSet.getString("salt");
 			}
 		}
-		setCurrentlyLoggedIn(id);
-		if(hashPass(password, dbSalt).equals(dbPassword)){
-			id = getCurrentlyLoggedIn();
+		if(dbId > -1 && hashPass(password, Base64.getDecoder().decode(dbSalt)).equals(dbPassword)){
+			setCurrentlyLoggedIn(dbId);
+			loggedId = getCurrentlyLoggedIn();
 		}
-		return id;
+		return loggedId;
 	}
 	
-	private String genSalt() {
-		//generate random salt
-		return "salt";
+	private static byte[] genSalt() throws NoSuchAlgorithmException, NoSuchProviderException {
+		SecureRandom sr = SecureRandom.getInstance("SHA1PRNG", "SUN");
+		byte[] salt = new byte[16];
+		sr.nextBytes(salt);
+		return salt;
 	}
 	
-	private static String hashPass(String pass, String salt) {
-		//create hash based on provided pass and salt
-		return "test123";
+	private static String hashPass(String pass, byte[] salt) {
+		String generatedPassword = null;
+		try{
+			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+			messageDigest.update(salt);
+			byte[] bytes = messageDigest.digest(Base64.getDecoder().decode(pass));
+			StringBuilder str = new StringBuilder();
+			for(int i = 0; i < bytes.length; i++) {
+				str.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+			}
+			generatedPassword = str.toString();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return generatedPassword;
 	}
 	
 }

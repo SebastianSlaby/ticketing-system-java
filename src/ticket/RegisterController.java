@@ -13,8 +13,11 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Base64;
 
 public class RegisterController {
     @FXML
@@ -45,7 +48,7 @@ public class RegisterController {
 
 
     @FXML
-    public void registerUser (ActionEvent event) throws SQLException {
+    public void registerUser (ActionEvent event) throws SQLException, NoSuchProviderException, NoSuchAlgorithmException {
         fieldNames = new String[]{"Username", "First Name", "Last Name", "Email", "Password"};
         ArrayList<TextField> fields = new ArrayList<>();
         fields.add(usernameField);
@@ -76,7 +79,7 @@ public class RegisterController {
 
 
         String accountSQLQuery = String.format("INSERT INTO users (`username`, `salt`, `pass`, `name`, `surname`, `email`, `user_type`, `confirm_delete`) " +
-                            "VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%d', %b);", newAccount.getUsername(), newAccount.getSalt(),
+                            "VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%d', %b);", newAccount.getUsername(), Base64.getEncoder().encodeToString(newAccount.getSalt()),
                 newAccount.getPassword(), newAccount.getFirstName(), newAccount.getLastName(), newAccount.getEmail(), newAccount.getUser_type(), newAccount.isConfirmDelete());
 
         try(

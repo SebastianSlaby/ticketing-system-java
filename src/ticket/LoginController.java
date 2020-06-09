@@ -13,6 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -26,7 +27,7 @@ public class LoginController {
 
 
     @FXML
-    public void loginUser(ActionEvent event) throws SQLException {
+    public void loginUser(ActionEvent event) throws SQLException, UnsupportedEncodingException {
 
         ArrayList<TextField> fields = new ArrayList<>();
         fields.add(usernameField);
