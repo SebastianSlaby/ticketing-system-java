@@ -137,7 +137,9 @@ public class Controller {
                 } else {
                     buttonNewNote.setDisable(false);
                     hideTicketsMenuItem.setDisable(false);
-                    comboTicketState.setDisable(false);
+                    if(haveNotesBeenInitialized) {
+                        comboTicketState.setDisable(false);
+                    }
                     menuItemNewNote.setVisible(true);
                 }
             }

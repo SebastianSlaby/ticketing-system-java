@@ -118,6 +118,7 @@ public class Account {
 	
 	private static String hashPass(String pass, byte[] salt) {
 		String generatedPassword = null;
+		if(pass.length() < 2) return "";
 		try{
 			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
 			messageDigest.update(salt);

@@ -124,6 +124,12 @@ public class RegisterController {
             hasError = true;
         }
 
+        if(passwordField.getText().trim().length() < 2) {
+            highlightField(passwordField);
+            promptPassword.setText("Password must be at least 2 characters long");
+            hasError = true;
+        }
+
         if(!passwordField.getText().trim().isEmpty() && !confirmPasswordField.getText().trim().isEmpty() && !passwordField.getText().trim().equals(confirmPasswordField.getText().trim())) {
             highlightField(confirmPasswordField);
             promptPassword.setText("Confirm Password does not match the Password");
@@ -159,7 +165,6 @@ public class RegisterController {
         ) {
             while(resultSet.next()) {
                 count = resultSet.getInt(1);
-                System.out.println(count);
             }
         } catch (SQLException e) {
             e.printStackTrace();
